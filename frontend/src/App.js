@@ -2142,7 +2142,7 @@ const X100Game = () => {
       <div className="game-container">
         <div className="game-board x100-board" data-testid="x100-board">
           <div className="x100-wheel-container">
-            {/* SVG Wheel */}
+            {/* SVG Wheel - segments start from top (12 o'clock) and go clockwise */}
             <svg 
               viewBox="0 0 200 200" 
               className="x100-wheel-svg"
@@ -2152,10 +2152,12 @@ const X100Game = () => {
               }}
             >
               {wheelData.map((coef, i) => {
-                const startAngle = i * segmentAngle;
-                const endAngle = (i + 1) * segmentAngle;
-                const startRad = (startAngle - 90) * Math.PI / 180;
-                const endRad = (endAngle - 90) * Math.PI / 180;
+                // Each segment spans segmentAngle degrees
+                // Start from -90 so first segment is at top (12 o'clock)
+                const startAngle = (i * segmentAngle) - 90;
+                const endAngle = ((i + 1) * segmentAngle) - 90;
+                const startRad = startAngle * Math.PI / 180;
+                const endRad = endAngle * Math.PI / 180;
                 const x1 = 100 + 95 * Math.cos(startRad);
                 const y1 = 100 + 95 * Math.sin(startRad);
                 const x2 = 100 + 95 * Math.cos(endRad);
@@ -2167,7 +2169,7 @@ const X100Game = () => {
                     d={`M 100 100 L ${x1} ${y1} A 95 95 0 0 1 ${x2} ${y2} Z`}
                     fill={colors[coef]}
                     stroke="#1a1a2e"
-                    strokeWidth="0.3"
+                    strokeWidth="0.5"
                   />
                 );
               })}
