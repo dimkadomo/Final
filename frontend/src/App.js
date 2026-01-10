@@ -1558,6 +1558,57 @@ const Bonus = () => {
         </div>
       )}
 
+      {activeTab === 'tasks' && (
+        <div className="daily-tasks-section" data-testid="daily-tasks-section">
+          <div className="tasks-header">
+            <h3><i className="fa-solid fa-list-check"></i> Ежедневные задания</h3>
+            <p>Выполняйте задания и получайте награды! Задания обновляются каждый день.</p>
+          </div>
+          
+          {isDemo ? (
+            <div className="demo-warning">
+              <i className="fa-solid fa-exclamation-triangle"></i>
+              <span>Задания недоступны в демо-режиме. Авторизуйтесь через Telegram.</span>
+            </div>
+          ) : (
+            <div className="tasks-list">
+              {dailyTasks.map(task => (
+                <div key={task.id} className={`task-card ${task.completed ? 'completed' : ''} ${task.claimed ? 'claimed' : ''}`} data-testid={`task-${task.id}`}>
+                  <div className="task-icon">
+                    <i className={`fa-solid ${task.icon}`}></i>
+                  </div>
+                  <div className="task-info">
+                    <h4>{task.name}</h4>
+                    <p>{task.desc}</p>
+                    <div className="task-progress">
+                      <div className="progress-bar">
+                        <div className="progress-fill" style={{ width: `${Math.min(100, (task.current / task.target) * 100)}%` }}></div>
+                      </div>
+                      <span className="progress-text">{task.current}/{task.target}</span>
+                    </div>
+                  </div>
+                  <div className="task-reward">
+                    <span className="reward-amount">+{task.reward}₽</span>
+                    {task.claimed ? (
+                      <span className="task-claimed"><i className="fa-solid fa-check-circle"></i> Получено</span>
+                    ) : task.completed ? (
+                      <button className="claim-task-btn" onClick={() => claimDailyTask(task.id)} disabled={loading}>
+                        <i className="fa-solid fa-gift"></i> Забрать
+                      </button>
+                    ) : (
+                      <span className="task-pending"><i className="fa-solid fa-hourglass-half"></i> В процессе</span>
+                    )}
+                  </div>
+                </div>
+              ))}
+              {dailyTasks.length === 0 && (
+                <div className="no-tasks">Загрузка заданий...</div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+
       {activeTab === 'achievements' && (
         <div className="achievements-section" data-testid="achievements-section">
           <div className="achievements-grid">
