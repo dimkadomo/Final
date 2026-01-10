@@ -3170,6 +3170,7 @@ function App() {
                     <Route path="/payment/failed" element={<PaymentFailed />} />
                     <Route path="/bonus" element={<ProtectedRoute><Bonus /></ProtectedRoute>} />
                     <Route path="/ref" element={<ProtectedRoute><Referral /></ProtectedRoute>} />
+                    <Route path="/support" element={<ProtectedRoute><SupportPage /></ProtectedRoute>} />
                   </Routes>
                 </main>
                 <Footer />
