@@ -1079,13 +1079,13 @@ async def claim_raceback(user: dict = Depends(get_current_user)):
 
 # Daily bonus rewards (day streak -> bonus amount)
 DAILY_BONUS_REWARDS = {
-    1: 5,     # Day 1: 5₽
-    2: 8,     # Day 2: 8₽
-    3: 12,    # Day 3: 12₽
-    4: 20,    # Day 4: 20₽
-    5: 30,    # Day 5: 30₽
-    6: 40,    # Day 6: 40₽
-    7: 75,    # Day 7: 75₽ (weekly bonus!)
+    1: 2,     # Day 1: 2₽
+    2: 4,     # Day 2: 4₽
+    3: 6,     # Day 3: 6₽
+    4: 10,    # Day 4: 10₽
+    5: 15,    # Day 5: 15₽
+    6: 20,    # Day 6: 20₽
+    7: 35,    # Day 7: 35₽ (weekly bonus!)
 }
 
 @api_router.get("/bonus/daily")
