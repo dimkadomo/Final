@@ -1470,6 +1470,9 @@ const Bonus = () => {
         <button className={activeTab === 'daily' ? 'active' : ''} onClick={() => setActiveTab('daily')}>
           <i className="fa-solid fa-calendar-day"></i> Ежедневный
         </button>
+        <button className={activeTab === 'tasks' ? 'active' : ''} onClick={() => setActiveTab('tasks')}>
+          <i className="fa-solid fa-list-check"></i> Задания
+        </button>
         <button className={activeTab === 'achievements' ? 'active' : ''} onClick={() => setActiveTab('achievements')}>
           <i className="fa-solid fa-trophy"></i> Достижения
         </button>
