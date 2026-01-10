@@ -32,10 +32,14 @@ mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
 client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ.get('DB_NAME', 'easymoney')]
 
-# Security
-SECRET_KEY = os.environ.get('SECRET_KEY', secrets.token_hex(32))
-ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'easymoney2025admin')
-TELEGRAM_BOT_TOKEN = os.environ.get('TELEGRAM_BOT_TOKEN', '8271361408:AAGzA--uL8Wrs4OJjcwYNUaYc7VkPqDHSlg')
+# Security - All secrets must be set in environment variables
+SECRET_KEY = os.environ.get('SECRET_KEY')
+if not SECRET_KEY:
+    raise ValueError("SECRET_KEY environment variable is required")
+ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD')
+if not ADMIN_PASSWORD:
+    raise ValueError("ADMIN_PASSWORD environment variable is required")
+TELEGRAM_BOT_TOKEN = os.environ.get('TELEGRAM_BOT_TOKEN', '')  # Optional for demo mode
 ALGORITHM = "HS256"
 security = HTTPBearer(auto_error=False)
 
