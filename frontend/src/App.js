@@ -26,6 +26,7 @@ const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [onlineCount, setOnlineCount] = useState(250);
   const navigate = useNavigate();
+  const location = useLocation();
 
   // Fetch fake online count
   useEffect(() => {
@@ -38,9 +39,14 @@ const Header = () => {
       }
     };
     fetchOnline();
-    const interval = setInterval(fetchOnline, 30000); // Update every 30 seconds
+    const interval = setInterval(fetchOnline, 30000);
     return () => clearInterval(interval);
   }, []);
+
+  // Close menu on route change
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [location.pathname]);
 
   return (
     <header className="header" data-testid="header">
@@ -92,10 +98,103 @@ const Header = () => {
             </button>
           )}
           <button className="menu-toggle" onClick={() => setMenuOpen(!menuOpen)} data-testid="menu-toggle">
-            <i className="fa-solid fa-bars"></i>
+            <i className="fa-solid fa-ellipsis-vertical"></i>
           </button>
         </div>
       </div>
+      
+      {/* Fullscreen Navigation Menu */}
+      {menuOpen && (
+        <div className="fullscreen-menu" data-testid="fullscreen-menu">
+          <div className="fullscreen-menu-header">
+            <span className="menu-title">Навигация</span>
+            <button className="close-menu" onClick={() => setMenuOpen(false)}>
+              <i className="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+          <div className="fullscreen-menu-content">
+            <div className="menu-section">
+              <div className="menu-section-title">Игры</div>
+              <Link to="/mines" className="menu-item" data-testid="menu-mines">
+                <i className="fa-solid fa-bomb"></i>
+                <span>Mines</span>
+              </Link>
+              <Link to="/dice" className="menu-item" data-testid="menu-dice">
+                <i className="fa-solid fa-dice"></i>
+                <span>Dice</span>
+              </Link>
+              <Link to="/wheel" className="menu-item" data-testid="menu-wheel">
+                <i className="fa-solid fa-dharmachakra"></i>
+                <span>Wheel</span>
+              </Link>
+              <Link to="/crash" className="menu-item" data-testid="menu-crash">
+                <i className="fa-solid fa-chart-line"></i>
+                <span>Crash</span>
+              </Link>
+              <Link to="/bubbles" className="menu-item" data-testid="menu-bubbles">
+                <i className="fa-solid fa-circle"></i>
+                <span>Bubbles</span>
+              </Link>
+              <Link to="/x100" className="menu-item" data-testid="menu-x100">
+                <i className="fa-solid fa-bolt"></i>
+                <span>X100</span>
+              </Link>
+              <Link to="/keno" className="menu-item" data-testid="menu-keno">
+                <i className="fa-solid fa-table-cells"></i>
+                <span>Keno</span>
+              </Link>
+            </div>
+            
+            <div className="menu-section">
+              <div className="menu-section-title">Аккаунт</div>
+              {user ? (
+                <>
+                  <Link to="/wallet" className="menu-item" data-testid="menu-wallet">
+                    <i className="fa-solid fa-wallet"></i>
+                    <span>Кошелёк</span>
+                  </Link>
+                  <Link to="/bonus" className="menu-item" data-testid="menu-bonus">
+                    <i className="fa-solid fa-gift"></i>
+                    <span>Бонусы</span>
+                  </Link>
+                  <Link to="/ref" className="menu-item" data-testid="menu-ref">
+                    <i className="fa-solid fa-users"></i>
+                    <span>Партнёрка</span>
+                  </Link>
+                  <Link to="/support" className="menu-item" data-testid="menu-support">
+                    <i className="fa-solid fa-headset"></i>
+                    <span>Поддержка</span>
+                  </Link>
+                </>
+              ) : (
+                <Link to="/login" className="menu-item" data-testid="menu-login">
+                  <i className="fa-brands fa-telegram"></i>
+                  <span>Войти через Telegram</span>
+                </Link>
+              )}
+            </div>
+            
+            <div className="menu-section">
+              <div className="menu-section-title">Информация</div>
+              <a href="https://t.me/easymoneycaspro" target="_blank" rel="noopener noreferrer" className="menu-item">
+                <i className="fa-brands fa-telegram"></i>
+                <span>Telegram канал</span>
+              </a>
+              <Link to="/" className="menu-item" data-testid="menu-home">
+                <i className="fa-solid fa-house"></i>
+                <span>Главная</span>
+              </Link>
+            </div>
+            
+            {user && (
+              <button onClick={() => { logout(); setMenuOpen(false); }} className="menu-logout-btn" data-testid="menu-logout">
+                <i className="fa-solid fa-right-from-bracket"></i>
+                <span>Выйти из аккаунта</span>
+              </button>
+            )}
+          </div>
+        </div>
+      )}
     </header>
   );
 };
