@@ -1520,7 +1520,7 @@ const Bonus = () => {
           
           <div className="daily-bonus-days">
             {[1,2,3,4,5,6,7].map(day => {
-              const defaultRewards = {1: 5, 2: 8, 3: 12, 4: 20, 5: 30, 6: 40, 7: 75};
+              const defaultRewards = {1: 2, 2: 4, 3: 6, 4: 10, 5: 15, 6: 20, 7: 35};
               const currentDay = dailyBonus?.next_day || 1;
               const isPast = day < currentDay;
               const isCurrent = day === currentDay && dailyBonus?.can_claim;
