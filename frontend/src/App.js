@@ -1478,6 +1478,9 @@ const Bonus = () => {
         <button className={activeTab === 'daily' ? 'active' : ''} onClick={() => setActiveTab('daily')}>
           <i className="fa-solid fa-calendar-day"></i> Ежедневный
         </button>
+        <button className={activeTab === 'cashback' ? 'active' : ''} onClick={() => setActiveTab('cashback')}>
+          <i className="fa-solid fa-percent"></i> Кешбэк
+        </button>
         <button className={activeTab === 'tasks' ? 'active' : ''} onClick={() => setActiveTab('tasks')}>
           <i className="fa-solid fa-list-check"></i> Задания
         </button>
@@ -1490,10 +1493,10 @@ const Bonus = () => {
         <div className="bonus-cards">
           <div className="bonus-card raceback" data-testid="raceback-card">
             <div className="bonus-icon"><i className="fa-solid fa-rotate-left"></i></div>
-            <h3>Кешбэк 10%</h3>
-            <p>Получите 10% от проигранных ставок при нулевом балансе</p>
-            <div className="bonus-amount">{raceback?.toFixed(2)} ₽</div>
-            <button onClick={claimRaceback} disabled={loading || raceback < 1 || user?.balance > 0 || isDemo} data-testid="claim-raceback-btn">
+            <h3>Кешбэк {cashbackData.level?.percent || 5}%</h3>
+            <p>Уровень: {cashbackData.level?.name || 'Бронза'}</p>
+            <div className="bonus-amount">{cashbackData.raceback?.toFixed(2)} ₽</div>
+            <button onClick={claimRaceback} disabled={loading || cashbackData.raceback < 1 || user?.balance > 0 || isDemo} data-testid="claim-raceback-btn">
               {isDemo ? 'Недоступно в демо' : user?.balance > 0 ? 'Доступно при 0 балансе' : 'Забрать'}
             </button>
           </div>
