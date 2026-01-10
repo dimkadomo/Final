@@ -1701,33 +1701,85 @@ const Referral = () => {
         </div>
         
         <div className="ref-preview">
-          <p className="ref-desc">Приглашайте друзей и получайте 50% от их депозитов!</p>
-          <div className="ref-stats-preview">
-            <div className="ref-stat disabled">
-              <i className="fa-solid fa-user-plus"></i>
-              <div className="stat-value">—</div>
-              <div className="stat-label">Рефералов</div>
-            </div>
-            <div className="ref-stat disabled">
-              <i className="fa-solid fa-coins"></i>
-              <div className="stat-value">—</div>
-              <div className="stat-label">Доступно</div>
-            </div>
-            <div className="ref-stat disabled">
-              <i className="fa-solid fa-chart-line"></i>
-              <div className="stat-value">—</div>
-              <div className="stat-label">Всего</div>
-            </div>
+          <p className="ref-desc">Приглашайте друзей и получайте от 10% до 40% от их депозитов!</p>
+          <div className="ref-levels-preview">
+            <div className="level-item">🌱 Новичок: 10%</div>
+            <div className="level-item">⭐ Партнёр: 20% (10+ депов)</div>
+            <div className="level-item">🔥 Мастер: 30% (25+ депов)</div>
+            <div className="level-item">👑 Легенда: 40% (50+ депов)</div>
           </div>
         </div>
       </div>
     );
   }
 
+  const currentLevel = stats?.level || { name: "Новичок", percent: 10, min_refs: 0 };
+  const nextLevel = stats?.next_level;
+  const depositedRefs = stats?.deposited_refs || 0;
+  const progressToNext = nextLevel ? ((depositedRefs - currentLevel.min_refs) / (nextLevel.min_refs - currentLevel.min_refs)) * 100 : 100;
+
   return (
     <div className="page ref-page" data-testid="ref-page">
       <h2><i className="fa-solid fa-users"></i> Партнёрская программа</h2>
-      <p className="ref-desc">Приглашайте друзей и получайте 50% от их депозитов!</p>
+      
+      {/* Current Level Card */}
+      <div className="ref-level-card" data-testid="ref-level-card">
+        <div className="level-badge">
+          <span className="level-icon">
+            {currentLevel.percent === 10 && '🌱'}
+            {currentLevel.percent === 20 && '⭐'}
+            {currentLevel.percent === 30 && '🔥'}
+            {currentLevel.percent === 40 && '👑'}
+          </span>
+          <span className="level-name">{currentLevel.name}</span>
+        </div>
+        <div className="level-percent">{currentLevel.percent}%</div>
+        <p className="level-desc">от депозитов рефералов</p>
+        
+        {nextLevel && (
+          <div className="level-progress">
+            <div className="progress-info">
+              <span>До уровня "{nextLevel.name}"</span>
+              <span>{depositedRefs}/{nextLevel.min_refs} рефералов</span>
+            </div>
+            <div className="progress-bar">
+              <div className="progress-fill" style={{ width: `${Math.min(100, progressToNext)}%` }}></div>
+            </div>
+          </div>
+        )}
+        
+        {!nextLevel && (
+          <div className="max-level-badge">
+            <i className="fa-solid fa-crown"></i> Максимальный уровень!
+          </div>
+        )}
+      </div>
+
+      {/* Levels Overview */}
+      <div className="ref-levels-overview">
+        <h3>Уровни партнёрской программы</h3>
+        <div className="levels-grid">
+          {(stats?.levels || [
+            {min_refs: 0, percent: 10, name: "Новичок"},
+            {min_refs: 10, percent: 20, name: "Партнёр"},
+            {min_refs: 25, percent: 30, name: "Мастер"},
+            {min_refs: 50, percent: 40, name: "Легенда"}
+          ]).map((level, i) => (
+            <div key={i} className={`level-card ${currentLevel.percent === level.percent ? 'active' : ''} ${currentLevel.percent > level.percent ? 'completed' : ''}`}>
+              <div className="level-emoji">
+                {level.percent === 10 && '🌱'}
+                {level.percent === 20 && '⭐'}
+                {level.percent === 30 && '🔥'}
+                {level.percent === 40 && '👑'}
+              </div>
+              <div className="level-name">{level.name}</div>
+              <div className="level-percent-small">{level.percent}%</div>
+              <div className="level-req">{level.min_refs === 0 ? 'Старт' : `${level.min_refs}+ депов`}</div>
+              {currentLevel.percent === level.percent && <i className="fa-solid fa-check-circle level-check"></i>}
+            </div>
+          ))}
+        </div>
+      </div>
 
       <div className="ref-link-box" data-testid="ref-link-box">
         <label>Ваша реферальная ссылка:</label>
@@ -1741,7 +1793,12 @@ const Referral = () => {
         <div className="ref-stat">
           <i className="fa-solid fa-user-plus"></i>
           <div className="stat-value">{stats?.referalov || 0}</div>
-          <div className="stat-label">Рефералов</div>
+          <div className="stat-label">Всего рефералов</div>
+        </div>
+        <div className="ref-stat highlight">
+          <i className="fa-solid fa-money-bill-transfer"></i>
+          <div className="stat-value">{stats?.deposited_refs || 0}</div>
+          <div className="stat-label">С депозитом</div>
         </div>
         <div className="ref-stat">
           <i className="fa-solid fa-coins"></i>
