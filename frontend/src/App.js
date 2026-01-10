@@ -2065,6 +2065,7 @@ const X100Game = () => {
   const [result, setResult] = useState(null);
   const [spinning, setSpinning] = useState(false);
   const [rotation, setRotation] = useState(0);
+  const [spinCount, setSpinCount] = useState(0);
 
   const coefficients = [2, 3, 10, 15, 20, 100];
   const colors = { 
@@ -2085,6 +2086,9 @@ const X100Game = () => {
     15, 2, 3, 2, 10, 2, 3, 2, 3, 2, 10, 2, 3, 2, 3, 2, 10, 2, 3, 2, 3, 2, 3, 2
   ];
 
+  const totalSegments = wheelData.length;
+  const segmentAngle = 360 / totalSegments;
+
   const play = async () => {
     if (!user) return navigate('/login');
     if (user.balance < bet) return toast.error('Недостаточно средств');
@@ -2097,19 +2101,21 @@ const X100Game = () => {
       const res = await api.post('/games/x100/play', { bet, coef: selectedCoef });
       
       if (res.data.success) {
-        // Calculate rotation to land exactly on center of segment
-        const segmentAngle = 360 / wheelData.length;
         const position = res.data.position;
         
-        // Pointer is at top (0 degrees). We need to rotate the wheel so the target segment is at top.
-        // The segment at position 0 starts at 0 degrees.
-        // To put segment N at top, rotate by: -(N * segmentAngle + segmentAngle/2)
-        // We also add multiple full rotations for animation effect
-        const baseRotation = 360 * 5; // 5 full rotations for effect
-        const segmentCenterOffset = segmentAngle / 2; // Point to center of segment
-        const targetRotation = baseRotation - (position * segmentAngle) - segmentCenterOffset;
+        // Calculate the exact rotation needed
+        // Pointer is at TOP (12 o'clock position)
+        // Segment 0 starts at TOP and goes clockwise
+        // To land on segment N, we rotate the wheel so segment N is at TOP
+        // Rotation is clockwise, so we need: -(position * segmentAngle) - segmentAngle/2
+        // The -segmentAngle/2 centers the pointer in the middle of the segment
         
-        setRotation(rotation + targetRotation);
+        const fullRotations = 360 * (5 + spinCount); // Multiple full rotations for effect
+        const targetAngle = position * segmentAngle + segmentAngle / 2;
+        const finalRotation = fullRotations + (360 - targetAngle);
+        
+        setRotation(finalRotation);
+        setSpinCount(prev => prev + 1);
         
         setTimeout(() => {
           setSpinning(false);
@@ -2130,8 +2136,6 @@ const X100Game = () => {
       setLoading(false);
     }
   };
-
-  const segmentAngle = 360 / wheelData.length;
 
   return (
     <div className="page game-page x100-page" data-testid="x100-page">
