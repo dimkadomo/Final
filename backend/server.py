@@ -146,7 +146,7 @@ async def get_settings():
     settings = await db.settings.find_one({"id": "main"}, {"_id": 0})
     if not settings:
         settings = {
-            "id": "main", "raceback_percent": 10, "ref_percent": 50, "min_withdraw": 100,
+            "id": "main", "raceback_percent": 10, "min_withdraw": 100,
             "dice_rtp": 97, "mines_rtp": 97, "bubbles_rtp": 97, "wheel_rtp": 97, 
             "crash_rtp": 97, "x100_rtp": 97, "keno_rtp": 97,
             "dice_bank": 10000, "mines_bank": 10000, "bubbles_bank": 10000, "wheel_bank": 10000
@@ -168,13 +168,53 @@ async def calculate_raceback(user_id: str, bet: float):
     raceback_amount = round_money(bet * percent)
     await db.users.update_one({"id": user_id}, {"$inc": {"raceback": raceback_amount}})
 
+# Referral level system
+# Level 1: 0-9 deposited refs = 10%
+# Level 2: 10-24 deposited refs = 20%
+# Level 3: 25-49 deposited refs = 30%
+# Level 4: 50+ deposited refs = 40%
+REF_LEVELS = [
+    {"min_refs": 0, "percent": 10, "name": "Новичок"},
+    {"min_refs": 10, "percent": 20, "name": "Партнёр"},
+    {"min_refs": 25, "percent": 30, "name": "Мастер"},
+    {"min_refs": 50, "percent": 40, "name": "Легенда"},
+]
+
+def get_ref_level(deposited_refs: int):
+    """Get referral level based on number of refs who deposited"""
+    level = REF_LEVELS[0]
+    for l in REF_LEVELS:
+        if deposited_refs >= l["min_refs"]:
+            level = l
+    return level
+
 async def add_ref_bonus(user: dict, deposit_amount: float):
+    """Add referral bonus when user deposits"""
     if not user.get("invited_by"):
         return
-    settings = await get_settings()
-    percent = settings.get("ref_percent", 50) / 100
+    
+    # Get inviter
+    inviter = await db.users.find_one({"id": user["invited_by"]}, {"_id": 0})
+    if not inviter:
+        return
+    
+    # Check if this is user's first deposit (to count deposited refs)
+    is_first_deposit = user.get("total_deposited", 0) == 0 or user.get("total_deposited") is None
+    
+    # Get inviter's deposited refs count
+    deposited_refs = inviter.get("deposited_refs", 0)
+    
+    # If this is user's first deposit, increment deposited_refs for inviter
+    if is_first_deposit:
+        deposited_refs += 1
+        await db.users.update_one({"id": inviter["id"]}, {"$inc": {"deposited_refs": 1}})
+    
+    # Get level and percent based on deposited refs
+    level = get_ref_level(deposited_refs)
+    percent = level["percent"] / 100
+    
     bonus = round_money(deposit_amount * percent)
-    await db.users.update_one({"id": user["invited_by"]}, {"$inc": {"income": bonus, "income_all": bonus}})
+    await db.users.update_one({"id": inviter["id"]}, {"$inc": {"income": bonus, "income_all": bonus}})
 
 def should_player_win(rtp: float, user: dict, multiplier: float = 2.0, game: str = "default") -> bool:
     """
