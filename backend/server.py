@@ -1697,7 +1697,11 @@ async def complete_mock_payment(payment_id: str):
     total_amount = payment["amount"] + bonus
     wager = payment["amount"] * wager_mult
     
-    await db.users.update_one({"id": user["id"]}, {"$inc": {"balance": total_amount, "deposit": payment["amount"], "wager": wager}})
+    # Update user balance and track total deposits for cashback level
+    await db.users.update_one(
+        {"id": user["id"]}, 
+        {"$inc": {"balance": total_amount, "deposit": payment["amount"], "wager": wager, "total_deposited": payment["amount"]}}
+    )
     await db.payments.update_one({"id": payment_id}, {"$set": {"status": "completed", "bonus": bonus}})
     await add_ref_bonus(user, payment["amount"])
     
