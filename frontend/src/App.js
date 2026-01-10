@@ -2408,6 +2408,113 @@ const SupportChat = () => {
   );
 };
 
+// Support Page - Full page support chat
+const SupportPage = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const [messages, setMessages] = useState([]);
+  const [newMessage, setNewMessage] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!user) {
+      navigate('/login');
+      return;
+    }
+    fetchMessages();
+    const interval = setInterval(fetchMessages, 3000);
+    return () => clearInterval(interval);
+  }, [user, navigate]);
+
+  const fetchMessages = async () => {
+    try {
+      const res = await api.get('/support/messages');
+      if (res.data.success) setMessages(res.data.messages);
+    } catch (e) {}
+  };
+
+  const sendMessage = async () => {
+    if (!newMessage.trim()) return;
+    setLoading(true);
+    try {
+      await api.post('/support/message', { message: newMessage });
+      setNewMessage('');
+      fetchMessages();
+      toast.success('Сообщение отправлено');
+    } catch (e) {
+      toast.error('Ошибка отправки');
+    }
+    setLoading(false);
+  };
+
+  return (
+    <div className="page support-page" data-testid="support-page">
+      <div className="support-page-container">
+        <div className="support-page-header">
+          <h2><i className="fa-solid fa-headset"></i> Служба поддержки</h2>
+          <p>Напишите нам, и мы ответим в ближайшее время!</p>
+        </div>
+        
+        <div className="support-page-chat">
+          <div className="support-page-messages">
+            {messages.length === 0 ? (
+              <div className="no-messages-page">
+                <i className="fa-solid fa-comments"></i>
+                <h3>Начните диалог</h3>
+                <p>Опишите вашу проблему или задайте вопрос</p>
+              </div>
+            ) : (
+              messages.map((msg, i) => (
+                <div key={i} className={`support-page-message ${msg.is_admin ? 'admin' : 'user'}`}>
+                  <div className="msg-avatar">
+                    <i className={`fa-solid ${msg.is_admin ? 'fa-headset' : 'fa-user'}`}></i>
+                  </div>
+                  <div className="msg-content">
+                    <div className="msg-sender">{msg.is_admin ? 'Поддержка' : 'Вы'}</div>
+                    <div className="msg-text">{msg.message}</div>
+                    <div className="msg-time">{new Date(msg.created_at).toLocaleString()}</div>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+          
+          <div className="support-page-input">
+            <input 
+              type="text" 
+              value={newMessage} 
+              onChange={e => setNewMessage(e.target.value)}
+              onKeyPress={e => e.key === 'Enter' && sendMessage()}
+              placeholder="Введите сообщение..."
+              disabled={loading}
+            />
+            <button onClick={sendMessage} disabled={loading || !newMessage.trim()}>
+              <i className="fa-solid fa-paper-plane"></i> Отправить
+            </button>
+          </div>
+        </div>
+        
+        <div className="support-info">
+          <div className="support-info-item">
+            <i className="fa-brands fa-telegram"></i>
+            <div>
+              <h4>Telegram</h4>
+              <a href="https://t.me/easymoneycaspro" target="_blank" rel="noopener noreferrer">@easymoneycaspro</a>
+            </div>
+          </div>
+          <div className="support-info-item">
+            <i className="fa-solid fa-clock"></i>
+            <div>
+              <h4>Время ответа</h4>
+              <span>Обычно в течение 1 часа</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 
 const PolicyPage = () => (
   <div className="page legal-page" data-testid="policy-page">
