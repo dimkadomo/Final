@@ -1283,8 +1283,29 @@ async def check_achievements(user_id: str) -> list:
 
 @api_router.get("/achievements")
 async def get_achievements(user: dict = Depends(get_current_user)):
-    """Get user achievements"""
+    """Get user achievements with real-time check"""
+    if user.get("is_demo"):
+        # For demo users, return empty achievements
+        achievements_list = []
+        for key, data in ACHIEVEMENTS.items():
+            achievements_list.append({
+                "id": key,
+                "name": data["name"],
+                "desc": data["desc"],
+                "reward": data["reward"],
+                "icon": data["icon"],
+                "unlocked": False,
+                "claimed": False
+            })
+        return {"success": True, "achievements": achievements_list, "is_demo": True}
+    
+    # Check for new achievements
+    await check_achievements(user["id"])
+    
+    # Refresh user data
+    user = await db.users.find_one({"id": user["id"]}, {"_id": 0})
     user_achievements = user.get("achievements", [])
+    claimed_achievements = user.get("claimed_achievements", [])
     
     achievements_list = []
     for key, data in ACHIEVEMENTS.items():
@@ -1294,7 +1315,8 @@ async def get_achievements(user: dict = Depends(get_current_user)):
             "desc": data["desc"],
             "reward": data["reward"],
             "icon": data["icon"],
-            "unlocked": key in user_achievements
+            "unlocked": key in user_achievements,
+            "claimed": key in claimed_achievements
         })
     
     return {"success": True, "achievements": achievements_list}
