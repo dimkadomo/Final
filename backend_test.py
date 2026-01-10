@@ -181,6 +181,70 @@ class EasyMoneyAPITester:
             return False
         return False
 
+    def test_daily_bonus_system(self):
+        """Test Daily Bonus system as specified in review request"""
+        if not self.token:
+            return self.log_test("Daily Bonus System", False, "No token available")
+        
+        print("\n🎁 Testing Daily Bonus System")
+        print("-" * 30)
+        
+        # Test GET /api/bonus/daily
+        success1, data1 = self.run_test("Get Daily Bonus Status", "GET", "/bonus/daily")
+        
+        if success1 and data1.get('success'):
+            # Validate response structure for demo user
+            expected_fields = ['is_demo', 'can_claim', 'rewards']
+            missing_fields = [field for field in expected_fields if field not in data1]
+            
+            if missing_fields:
+                self.log_test("Daily Bonus Response Structure", False, f"Missing fields: {missing_fields}")
+                return False
+            
+            # Validate demo user restrictions
+            is_demo = data1.get('is_demo')
+            can_claim = data1.get('can_claim')
+            rewards = data1.get('rewards')
+            
+            if is_demo != True:
+                self.log_test("Demo User Flag", False, f"Expected is_demo=True, got {is_demo}")
+                return False
+            else:
+                self.log_test("Demo User Flag", True, "is_demo=True ✓")
+            
+            if can_claim != False:
+                self.log_test("Demo Claim Restriction", False, f"Expected can_claim=False, got {can_claim}")
+                return False
+            else:
+                self.log_test("Demo Claim Restriction", True, "can_claim=False ✓")
+            
+            # Validate rewards structure
+            expected_rewards = {1: 10, 2: 15, 3: 25, 4: 40, 5: 60, 6: 80, 7: 150}
+            if rewards == expected_rewards:
+                self.log_test("Rewards Structure", True, f"Correct rewards: {rewards}")
+            else:
+                self.log_test("Rewards Structure", False, f"Expected {expected_rewards}, got {rewards}")
+                return False
+        else:
+            self.log_test("Get Daily Bonus Status", False, "API call failed")
+            return False
+        
+        # Test POST /api/bonus/daily/claim (should fail for demo user)
+        success2, data2 = self.run_test("Claim Daily Bonus (Demo)", "POST", "/bonus/daily/claim", expected_status=403)
+        
+        if success2 and data2.get('detail'):
+            detail = data2.get('detail')
+            if 'демо-режиме' in detail or 'demo' in detail.lower():
+                self.log_test("Demo Claim Blocked", True, f"Correctly blocked: {detail}")
+            else:
+                self.log_test("Demo Claim Blocked", False, f"Unexpected error message: {detail}")
+                return False
+        else:
+            self.log_test("Demo Claim Blocked", False, "Expected 403 error for demo user")
+            return False
+        
+        return self.log_test("Daily Bonus System Complete", True, "All daily bonus tests passed")
+
     def test_additional_endpoints(self):
         """Test additional game endpoints"""
         if not self.token:
