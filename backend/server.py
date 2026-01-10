@@ -1186,14 +1186,100 @@ async def claim_daily_bonus(user: dict = Depends(get_current_user)):
 # ================== ACHIEVEMENTS ==================
 
 ACHIEVEMENTS = {
-    "first_win": {"name": "Первая победа", "desc": "Выиграйте первую игру", "reward": 20, "icon": "fa-trophy"},
-    "high_roller": {"name": "Хайроллер", "desc": "Сделайте ставку 500₽+", "reward": 50, "icon": "fa-coins"},
-    "lucky_streak": {"name": "Удачная серия", "desc": "Выиграйте 5 игр подряд", "reward": 100, "icon": "fa-fire"},
-    "big_win": {"name": "Большой выигрыш", "desc": "Выиграйте 1000₽ за раз", "reward": 75, "icon": "fa-star"},
-    "explorer": {"name": "Исследователь", "desc": "Сыграйте во все игры", "reward": 30, "icon": "fa-compass"},
-    "veteran": {"name": "Ветеран", "desc": "Сделайте 100 ставок", "reward": 150, "icon": "fa-medal"},
-    "week_streak": {"name": "Недельная серия", "desc": "Заходите 7 дней подряд", "reward": 200, "icon": "fa-calendar-check"},
+    "first_win": {"name": "Первая победа", "desc": "Выиграйте первую игру", "reward": 10, "icon": "fa-trophy", "type": "first_win"},
+    "high_roller": {"name": "Хайроллер", "desc": "Сделайте ставку 500₽+", "reward": 25, "icon": "fa-coins", "type": "high_bet", "target": 500},
+    "lucky_streak": {"name": "Удачная серия", "desc": "Выиграйте 5 игр подряд", "reward": 50, "icon": "fa-fire", "type": "win_streak", "target": 5},
+    "big_win": {"name": "Большой выигрыш", "desc": "Выиграйте 500₽ за раз", "reward": 35, "icon": "fa-star", "type": "big_win", "target": 500},
+    "explorer": {"name": "Исследователь", "desc": "Сыграйте во все игры", "reward": 15, "icon": "fa-compass", "type": "all_games"},
+    "veteran": {"name": "Ветеран", "desc": "Сделайте 100 ставок", "reward": 75, "icon": "fa-medal", "type": "total_bets", "target": 100},
+    "week_streak": {"name": "Недельная серия", "desc": "Заходите 7 дней подряд", "reward": 100, "icon": "fa-calendar-check", "type": "daily_streak", "target": 7},
 }
+
+async def check_achievements(user_id: str) -> list:
+    """Check and unlock achievements for user"""
+    user = await db.users.find_one({"id": user_id}, {"_id": 0})
+    if not user:
+        return []
+    
+    unlocked = user.get("achievements", [])
+    new_achievements = []
+    
+    # Get all games from all collections
+    game_collections = ["mines_games", "dice_games", "bubbles_games", "wheel_games", "crash_games", "x100_games"]
+    
+    total_games = 0
+    total_wins = 0
+    max_win = 0
+    max_bet = 0
+    games_played_set = set()
+    current_win_streak = 0
+    max_win_streak = 0
+    
+    for collection_name in game_collections:
+        collection = db[collection_name]
+        games = await collection.find({"user_id": user_id}).sort("created_at", 1).to_list(10000)
+        
+        game_type = collection_name.replace("_games", "")
+        
+        for game in games:
+            total_games += 1
+            bet = game.get("bet", 0)
+            win = game.get("win", 0)
+            status = game.get("status", "")
+            
+            if bet > max_bet:
+                max_bet = bet
+            
+            if win > max_win:
+                max_win = win
+                
+            games_played_set.add(game_type)
+            
+            if status == "win":
+                total_wins += 1
+                current_win_streak += 1
+                if current_win_streak > max_win_streak:
+                    max_win_streak = current_win_streak
+            else:
+                current_win_streak = 0
+    
+    # Check each achievement
+    # first_win - выиграйте первую игру
+    if "first_win" not in unlocked and total_wins >= 1:
+        new_achievements.append("first_win")
+    
+    # high_roller - ставка 500₽+
+    if "high_roller" not in unlocked and max_bet >= 500:
+        new_achievements.append("high_roller")
+    
+    # lucky_streak - 5 побед подряд
+    if "lucky_streak" not in unlocked and max_win_streak >= 5:
+        new_achievements.append("lucky_streak")
+    
+    # big_win - выигрыш 500₽ за раз
+    if "big_win" not in unlocked and max_win >= 500:
+        new_achievements.append("big_win")
+    
+    # explorer - сыграть во все игры (6 игр)
+    if "explorer" not in unlocked and len(games_played_set) >= 6:
+        new_achievements.append("explorer")
+    
+    # veteran - 100 ставок
+    if "veteran" not in unlocked and total_games >= 100:
+        new_achievements.append("veteran")
+    
+    # week_streak - 7 дней подряд (проверяем daily_streak пользователя)
+    if "week_streak" not in unlocked and user.get("daily_streak", 0) >= 7:
+        new_achievements.append("week_streak")
+    
+    # Save new achievements
+    if new_achievements:
+        await db.users.update_one(
+            {"id": user_id},
+            {"$push": {"achievements": {"$each": new_achievements}}}
+        )
+    
+    return new_achievements
 
 @api_router.get("/achievements")
 async def get_achievements(user: dict = Depends(get_current_user)):
