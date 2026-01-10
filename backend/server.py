@@ -1190,13 +1190,13 @@ async def claim_daily_bonus(user: dict = Depends(get_current_user)):
 # ================== ACHIEVEMENTS ==================
 
 ACHIEVEMENTS = {
-    "first_win": {"name": "Первая победа", "desc": "Выиграйте первую игру", "reward": 10, "icon": "fa-trophy", "type": "first_win"},
-    "high_roller": {"name": "Хайроллер", "desc": "Сделайте ставку 500₽+", "reward": 25, "icon": "fa-coins", "type": "high_bet", "target": 500},
-    "lucky_streak": {"name": "Удачная серия", "desc": "Выиграйте 5 игр подряд", "reward": 50, "icon": "fa-fire", "type": "win_streak", "target": 5},
-    "big_win": {"name": "Большой выигрыш", "desc": "Выиграйте 500₽ за раз", "reward": 35, "icon": "fa-star", "type": "big_win", "target": 500},
-    "explorer": {"name": "Исследователь", "desc": "Сыграйте во все игры", "reward": 15, "icon": "fa-compass", "type": "all_games"},
-    "veteran": {"name": "Ветеран", "desc": "Сделайте 100 ставок", "reward": 75, "icon": "fa-medal", "type": "total_bets", "target": 100},
-    "week_streak": {"name": "Недельная серия", "desc": "Заходите 7 дней подряд", "reward": 100, "icon": "fa-calendar-check", "type": "daily_streak", "target": 7},
+    "first_win": {"name": "Первая победа", "desc": "Выиграйте первую игру", "reward": 5, "icon": "fa-trophy", "type": "first_win"},
+    "high_roller": {"name": "Хайроллер", "desc": "Сделайте ставку 500₽+", "reward": 12, "icon": "fa-coins", "type": "high_bet", "target": 500},
+    "lucky_streak": {"name": "Удачная серия", "desc": "Выиграйте 5 игр подряд", "reward": 25, "icon": "fa-fire", "type": "win_streak", "target": 5},
+    "big_win": {"name": "Большой выигрыш", "desc": "Выиграйте 500₽ за раз", "reward": 17, "icon": "fa-star", "type": "big_win", "target": 500},
+    "explorer": {"name": "Исследователь", "desc": "Сыграйте во все игры", "reward": 7, "icon": "fa-compass", "type": "all_games"},
+    "veteran": {"name": "Ветеран", "desc": "Сделайте 100 ставок", "reward": 37, "icon": "fa-medal", "type": "total_bets", "target": 100},
+    "week_streak": {"name": "Недельная серия", "desc": "Заходите 7 дней подряд", "reward": 50, "icon": "fa-calendar-check", "type": "daily_streak", "target": 7},
 }
 
 async def check_achievements(user_id: str) -> list:
