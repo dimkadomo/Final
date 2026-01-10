@@ -1302,17 +1302,19 @@ const Bonus = () => {
           
           <div className="daily-bonus-days">
             {[1,2,3,4,5,6,7].map(day => {
+              const defaultRewards = {1: 10, 2: 15, 3: 25, 4: 40, 5: 60, 6: 80, 7: 150};
               const currentDay = dailyBonus?.next_day || 1;
               const isPast = day < currentDay;
               const isCurrent = day === currentDay && dailyBonus?.can_claim;
               const isLocked = day > currentDay || (day === currentDay && !dailyBonus?.can_claim);
+              const reward = dailyBonus?.rewards?.[day] || defaultRewards[day];
               
               return (
                 <div key={day} className={`daily-day ${isPast ? 'claimed' : ''} ${isCurrent ? 'current' : ''} ${isLocked ? 'locked' : ''}`}>
                   <div className="day-number">День {day}</div>
                   <div className="day-reward">
                     {day === 7 ? <i className="fa-solid fa-crown"></i> : <i className="fa-solid fa-coins"></i>}
-                    {dailyBonus?.rewards?.[day] || (10 + (day - 1) * 10)}₽
+                    {reward}₽
                   </div>
                   {isPast && <i className="fa-solid fa-check-circle day-check"></i>}
                   {isLocked && day !== currentDay && <i className="fa-solid fa-lock day-lock"></i>}
