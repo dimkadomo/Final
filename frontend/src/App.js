@@ -1307,7 +1307,7 @@ const PaymentFailed = () => {
 const Bonus = () => {
   const { user, updateBalance } = useAuth();
   const navigate = useNavigate();
-  const [raceback, setRaceback] = useState(0);
+  const [cashbackData, setCashbackData] = useState({ raceback: 0, level: null, next_level: null, levels: [], total_deposited: 0 });
   const [promoCode, setPromoCode] = useState('');
   const [loading, setLoading] = useState(false);
   const [dailyBonus, setDailyBonus] = useState(null);
@@ -1318,16 +1318,24 @@ const Bonus = () => {
   const isDemo = user?.is_demo;
 
   useEffect(() => {
-    fetchRaceback();
+    fetchCashback();
     fetchDailyBonus();
     fetchAchievements();
     fetchDailyTasks();
   }, []);
 
-  const fetchRaceback = async () => {
+  const fetchCashback = async () => {
     try {
       const res = await api.get('/bonus/raceback');
-      if (res.data.success) setRaceback(res.data.raceback);
+      if (res.data.success) {
+        setCashbackData({
+          raceback: res.data.raceback || 0,
+          level: res.data.level || { name: "Бронза", percent: 5, min_deposit: 0 },
+          next_level: res.data.next_level,
+          levels: res.data.levels || [],
+          total_deposited: res.data.total_deposited || 0
+        });
+      }
     } catch (e) {}
   };
 
@@ -1381,7 +1389,7 @@ const Bonus = () => {
       const res = await api.post('/bonus/raceback/claim');
       if (res.data.success) {
         updateBalance(res.data.balance);
-        setRaceback(0);
+        setCashbackData(prev => ({ ...prev, raceback: 0 }));
         toast.success(`Получено ${res.data.claimed?.toFixed(2)}₽`);
       }
     } catch (e) {
