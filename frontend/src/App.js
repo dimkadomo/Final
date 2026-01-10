@@ -1312,6 +1312,7 @@ const Bonus = () => {
   const [loading, setLoading] = useState(false);
   const [dailyBonus, setDailyBonus] = useState(null);
   const [achievements, setAchievements] = useState([]);
+  const [dailyTasks, setDailyTasks] = useState([]);
   const [activeTab, setActiveTab] = useState('bonuses');
 
   const isDemo = user?.is_demo;
@@ -1320,6 +1321,7 @@ const Bonus = () => {
     fetchRaceback();
     fetchDailyBonus();
     fetchAchievements();
+    fetchDailyTasks();
   }, []);
 
   const fetchRaceback = async () => {
@@ -1327,6 +1329,32 @@ const Bonus = () => {
       const res = await api.get('/bonus/raceback');
       if (res.data.success) setRaceback(res.data.raceback);
     } catch (e) {}
+  };
+
+  const fetchDailyTasks = async () => {
+    try {
+      const res = await api.get('/tasks/daily');
+      if (res.data.success) setDailyTasks(res.data.tasks || []);
+    } catch (e) {}
+  };
+
+  const claimDailyTask = async (taskId) => {
+    if (isDemo) {
+      toast.error('Задания недоступны в демо-режиме');
+      return;
+    }
+    setLoading(true);
+    try {
+      const res = await api.post(`/tasks/daily/${taskId}/claim`);
+      if (res.data.success) {
+        updateBalance(res.data.balance);
+        toast.success(`🎯 ${res.data.message}`);
+        fetchDailyTasks();
+      }
+    } catch (e) {
+      toast.error(e.response?.data?.detail || 'Ошибка');
+    }
+    setLoading(false);
   };
 
   const fetchDailyBonus = async () => {
