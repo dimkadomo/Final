@@ -1368,7 +1368,7 @@ DAILY_TASKS = {
     "play_3_games": {
         "name": "Активный игрок",
         "desc": "Сыграйте 3 игры сегодня",
-        "reward": 7,
+        "reward": 3,
         "icon": "fa-gamepad",
         "target": 3,
         "type": "games_played"
@@ -1376,7 +1376,7 @@ DAILY_TASKS = {
     "win_any_game": {
         "name": "Победитель",
         "desc": "Выиграйте хотя бы 1 игру",
-        "reward": 5,
+        "reward": 2,
         "icon": "fa-trophy",
         "target": 1,
         "type": "games_won"
@@ -1384,7 +1384,7 @@ DAILY_TASKS = {
     "bet_100": {
         "name": "Ставочник",
         "desc": "Сделайте ставки на сумму 100₽",
-        "reward": 10,
+        "reward": 5,
         "icon": "fa-coins",
         "target": 100,
         "type": "total_bet"
@@ -1392,7 +1392,7 @@ DAILY_TASKS = {
     "play_2_different": {
         "name": "Разнообразие",
         "desc": "Сыграйте в 2 разные игры",
-        "reward": 7,
+        "reward": 3,
         "icon": "fa-dice",
         "target": 2,
         "type": "different_games"
@@ -1400,7 +1400,7 @@ DAILY_TASKS = {
     "win_50": {
         "name": "Профит",
         "desc": "Выиграйте 50₽ за день",
-        "reward": 12,
+        "reward": 6,
         "icon": "fa-money-bill-wave",
         "target": 50,
         "type": "total_win"
