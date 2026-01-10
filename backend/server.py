@@ -1163,7 +1163,25 @@ async def ref_withdraw(user: dict = Depends(get_current_user)):
 
 @api_router.get("/bonus/raceback")
 async def get_raceback(user: dict = Depends(get_current_user)):
-    return {"success": True, "raceback": user["raceback"]}
+    """Get cashback info with level system"""
+    total_deposited = user.get("total_deposited", 0)
+    current_level = get_cashback_level(total_deposited)
+    
+    # Find next level
+    next_level = None
+    for level in CASHBACK_LEVELS:
+        if level["min_deposit"] > total_deposited:
+            next_level = level
+            break
+    
+    return {
+        "success": True, 
+        "raceback": user.get("raceback", 0),
+        "total_deposited": total_deposited,
+        "level": current_level,
+        "next_level": next_level,
+        "levels": CASHBACK_LEVELS
+    }
 
 @api_router.post("/bonus/raceback/claim")
 async def claim_raceback(user: dict = Depends(get_current_user)):
