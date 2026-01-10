@@ -805,6 +805,72 @@ main {
   color: var(--accent-red);
 }
 
+/* Mobile responsive for game history */
+@media (max-width: 768px) {
+  .game-history {
+    padding: 16px;
+  }
+  
+  .game-history h3 {
+    font-size: 1rem;
+    margin-bottom: 15px;
+  }
+  
+  .history-item {
+    grid-template-columns: 1fr;
+    gap: 8px;
+    padding: 14px;
+    position: relative;
+  }
+  
+  .history-game {
+    font-size: 0.85rem;
+  }
+  
+  .history-user {
+    display: none;
+  }
+  
+  .history-bet {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    font-size: 0.9rem;
+    color: var(--text-primary);
+  }
+  
+  .history-coeff {
+    font-size: 0.85rem;
+  }
+  
+  .history-result {
+    position: absolute;
+    bottom: 14px;
+    right: 14px;
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .game-history {
+    padding: 12px;
+    border-radius: 15px;
+  }
+  
+  .history-item {
+    padding: 12px;
+    border-radius: 10px;
+  }
+  
+  .history-bet {
+    font-size: 0.85rem;
+  }
+  
+  .history-result {
+    font-size: 0.9rem;
+  }
+}
+
 /* Login Page */
 .login-page {
   display: flex;
