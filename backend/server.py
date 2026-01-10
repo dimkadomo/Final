@@ -1080,8 +1080,40 @@ async def keno_play(request: Request, user: dict = Depends(get_current_user)):
 async def get_ref_stats(user: dict = Depends(get_current_user)):
     # Demo users cannot use referral system
     if user.get("is_demo"):
-        return {"success": True, "ref_link": "", "referalov": 0, "income": 0, "income_all": 0, "is_demo": True}
-    return {"success": True, "ref_link": user["ref_link"], "referalov": user["referalov"], "income": user["income"], "income_all": user["income_all"]}
+        return {
+            "success": True, 
+            "ref_link": "", 
+            "referalov": 0, 
+            "deposited_refs": 0,
+            "income": 0, 
+            "income_all": 0, 
+            "is_demo": True,
+            "level": REF_LEVELS[0],
+            "next_level": REF_LEVELS[1],
+            "levels": REF_LEVELS
+        }
+    
+    deposited_refs = user.get("deposited_refs", 0)
+    current_level = get_ref_level(deposited_refs)
+    
+    # Find next level
+    next_level = None
+    for i, level in enumerate(REF_LEVELS):
+        if level["min_refs"] > deposited_refs:
+            next_level = level
+            break
+    
+    return {
+        "success": True, 
+        "ref_link": user["ref_link"], 
+        "referalov": user["referalov"], 
+        "deposited_refs": deposited_refs,
+        "income": user["income"], 
+        "income_all": user["income_all"],
+        "level": current_level,
+        "next_level": next_level,
+        "levels": REF_LEVELS
+    }
 
 @api_router.post("/ref/withdraw")
 async def ref_withdraw(user: dict = Depends(get_current_user)):
