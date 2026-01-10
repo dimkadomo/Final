@@ -258,16 +258,20 @@ const GameHistory = () => {
       <div className="history-list">
         {history.map((h, i) => (
           <div key={i} className={`history-item ${h.status}`} data-testid={`history-item-${i}`}>
-            <div className="history-game">
-              <i className={`fa-solid ${gameIcons[h.game] || 'fa-gamepad'}`}></i>
-              <span>{gameNames[h.game] || h.game}</span>
+            <div className="history-row-top">
+              <div className="history-game">
+                <i className={`fa-solid ${gameIcons[h.game] || 'fa-gamepad'}`}></i>
+                <span>{gameNames[h.game] || h.game}</span>
+              </div>
+              <div className="history-bet">{h.bet?.toFixed(2)} ₽</div>
             </div>
-            <div className="history-user">{h.name?.split(' ')[0]}</div>
-            <div className="history-bet">{h.bet?.toFixed(2)} ₽</div>
-            <div className="history-coeff">x{h.coefficient?.toFixed ? h.coefficient.toFixed(2) : h.coefficient}</div>
-            <div className={`history-result ${h.status}`}>
-              {h.status === 'win' ? `+${h.win?.toFixed(2)}` : '0.00'} ₽
+            <div className="history-row-bottom">
+              <div className="history-coeff">x{h.coefficient?.toFixed ? h.coefficient.toFixed(2) : h.coefficient}</div>
+              <div className={`history-result ${h.status}`}>
+                {h.status === 'win' ? `+${h.win?.toFixed(2)}` : '0.00'} ₽
+              </div>
             </div>
+            <div className="history-user-desktop">{h.name?.split(' ')[0]}</div>
           </div>
         ))}
       </div>
