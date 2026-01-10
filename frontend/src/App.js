@@ -2729,7 +2729,7 @@ const AdminDashboard = () => {
             <h2>Настройки RTP (Return To Player)</h2>
             <p className="rtp-desc">RTP определяет процент возврата игроку. Чем выше RTP, тем чаще игроки выигрывают.</p>
             <div className="rtp-grid">
-              {['dice', 'mines', 'bubbles', 'wheel', 'crash', 'x100', 'keno'].map(game => (
+              {['dice', 'mines', 'bubbles', 'wheel', 'crash', 'x100'].map(game => (
                 <div key={game} className="rtp-item">
                   <label>{game.charAt(0).toUpperCase() + game.slice(1)} RTP</label>
                   <div className="rtp-input">
