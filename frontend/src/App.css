@@ -1653,6 +1653,286 @@ main {
   text-decoration: none;
 }
 
+/* Bonus Tabs */
+.bonus-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 30px;
+  background: var(--bg-card);
+  padding: 8px;
+  border-radius: 15px;
+  border: 1px solid var(--border-color);
+}
+
+.bonus-tabs button {
+  flex: 1;
+  background: transparent;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 10px;
+  color: var(--text-secondary);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.bonus-tabs button:hover {
+  color: var(--text-primary);
+  background: var(--bg-secondary);
+}
+
+.bonus-tabs button.active {
+  background: linear-gradient(135deg, var(--accent-green), var(--accent-green-dark));
+  color: white;
+}
+
+/* Daily Bonus Section */
+.daily-bonus-section {
+  background: var(--bg-card);
+  border-radius: 20px;
+  padding: 30px;
+  border: 1px solid var(--border-color);
+}
+
+.daily-bonus-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.daily-bonus-header h3 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+  color: var(--accent-yellow);
+}
+
+.daily-bonus-header p {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+
+.daily-bonus-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 12px;
+  margin-bottom: 30px;
+}
+
+.daily-day {
+  background: var(--bg-secondary);
+  border-radius: 15px;
+  padding: 20px 10px;
+  text-align: center;
+  border: 2px solid var(--border-color);
+  transition: all 0.3s;
+  position: relative;
+}
+
+.daily-day.claimed {
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.2), rgba(34, 197, 94, 0.1));
+  border-color: var(--accent-green);
+}
+
+.daily-day.current {
+  background: linear-gradient(135deg, rgba(250, 204, 21, 0.3), rgba(250, 204, 21, 0.15));
+  border-color: var(--accent-yellow);
+  transform: scale(1.05);
+  box-shadow: 0 0 20px rgba(250, 204, 21, 0.3);
+  animation: pulse-glow 2s infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(250, 204, 21, 0.3); }
+  50% { box-shadow: 0 0 30px rgba(250, 204, 21, 0.5); }
+}
+
+.daily-day.locked {
+  opacity: 0.5;
+}
+
+.day-number {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.day-reward {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--accent-yellow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+.daily-day.claimed .day-reward {
+  color: var(--accent-green);
+}
+
+.day-check {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  color: var(--accent-green);
+  font-size: 1.2rem;
+  background: var(--bg-card);
+  border-radius: 50%;
+}
+
+.day-lock {
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  margin-top: 5px;
+}
+
+.claim-daily-btn {
+  width: 100%;
+  background: linear-gradient(135deg, var(--accent-yellow), #d97706);
+  color: #000;
+  border: none;
+  padding: 16px 30px;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.claim-daily-btn:hover:not(:disabled) {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 30px rgba(250, 204, 21, 0.4);
+}
+
+.claim-daily-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+}
+
+/* Achievements Section */
+.achievements-section {
+  background: var(--bg-card);
+  border-radius: 20px;
+  padding: 30px;
+  border: 1px solid var(--border-color);
+}
+
+.achievements-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.achievement-card {
+  background: var(--bg-secondary);
+  border-radius: 15px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  border: 2px solid var(--border-color);
+  transition: all 0.3s;
+}
+
+.achievement-card.unlocked {
+  border-color: var(--accent-green);
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), transparent);
+}
+
+.achievement-card.locked {
+  opacity: 0.6;
+}
+
+.achievement-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  background: var(--bg-card);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: var(--text-secondary);
+}
+
+.achievement-card.unlocked .achievement-icon {
+  background: linear-gradient(135deg, var(--accent-green), var(--accent-green-dark));
+  color: white;
+}
+
+.achievement-info h4 {
+  margin-bottom: 5px;
+  font-size: 1rem;
+}
+
+.achievement-info p {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  margin-bottom: 8px;
+}
+
+.achievement-reward {
+  color: var(--accent-yellow);
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+/* Mobile Responsive for Daily Bonus */
+@media (max-width: 768px) {
+  .bonus-tabs {
+    flex-wrap: wrap;
+  }
+  
+  .bonus-tabs button {
+    flex: 1 1 auto;
+    min-width: 100px;
+    padding: 10px 15px;
+    font-size: 0.9rem;
+  }
+  
+  .daily-bonus-days {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+  
+  .daily-day {
+    padding: 15px 8px;
+  }
+  
+  .day-number {
+    font-size: 0.7rem;
+  }
+  
+  .day-reward {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .daily-bonus-days {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .daily-day:nth-child(7) {
+    grid-column: span 3;
+  }
+}
+
 /* Referral Page */
 .ref-page h2 {
   display: flex;
