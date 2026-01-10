@@ -1216,6 +1216,94 @@ const Wallet = () => {
   );
 };
 
+// Payment Success Page - redirects to home
+const PaymentSuccess = () => {
+  const navigate = useNavigate();
+  const [countdown, setCountdown] = useState(3);
+  
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCountdown(prev => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          navigate('/');
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    
+    return () => clearInterval(timer);
+  }, [navigate]);
+  
+  return (
+    <div className="page payment-result-page" data-testid="payment-success-page">
+      <div className="payment-result-card success">
+        <div className="result-icon success">
+          <i className="fa-solid fa-check-circle"></i>
+        </div>
+        <h2>Оплата прошла успешно!</h2>
+        <p>Ваш баланс пополнен. Спасибо за пополнение!</p>
+        <div className="result-redirect">
+          <span>Перенаправление на главную через {countdown}...</span>
+        </div>
+        <button className="btn-result" onClick={() => navigate('/')}>
+          <i className="fa-solid fa-house"></i> На главную
+        </button>
+      </div>
+    </div>
+  );
+};
+
+// Payment Failed Page
+const PaymentFailed = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const errorMessage = searchParams.get('error') || 'Произошла ошибка при обработке платежа';
+  const errorCode = searchParams.get('code') || '';
+  
+  return (
+    <div className="page payment-result-page" data-testid="payment-failed-page">
+      <div className="payment-result-card failed">
+        <div className="result-icon failed">
+          <i className="fa-solid fa-times-circle"></i>
+        </div>
+        <h2>Оплата не прошла</h2>
+        <p className="error-message">{errorMessage}</p>
+        {errorCode && <p className="error-code">Код ошибки: {errorCode}</p>}
+        
+        <div className="result-info">
+          <h4><i className="fa-solid fa-info-circle"></i> Возможные причины:</h4>
+          <ul>
+            <li>Недостаточно средств на карте/кошельке</li>
+            <li>Карта заблокирована или истёк срок действия</li>
+            <li>Превышен лимит операций</li>
+            <li>Технические проблемы на стороне платёжной системы</li>
+            <li>Операция отклонена банком</li>
+          </ul>
+        </div>
+        
+        <div className="result-actions">
+          <button className="btn-result primary" onClick={() => navigate('/wallet')}>
+            <i className="fa-solid fa-rotate-right"></i> Попробовать снова
+          </button>
+          <button className="btn-result secondary" onClick={() => navigate('/')}>
+            <i className="fa-solid fa-house"></i> На главную
+          </button>
+        </div>
+        
+        <div className="result-support">
+          <p>Если проблема повторяется, обратитесь в поддержку:</p>
+          <a href="https://t.me/easymoneycaspro" target="_blank" rel="noopener noreferrer" className="support-link">
+            <i className="fa-brands fa-telegram"></i> Написать в Telegram
+          </a>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const Bonus = () => {
   const { user, updateBalance } = useAuth();
   const navigate = useNavigate();
