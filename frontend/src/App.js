@@ -2971,6 +2971,8 @@ function App() {
                     <Route path="/policy" element={<PolicyPage />} />
                     <Route path="/terms" element={<TermsPage />} />
                     <Route path="/wallet" element={<ProtectedRoute><Wallet /></ProtectedRoute>} />
+                    <Route path="/payment/success" element={<PaymentSuccess />} />
+                    <Route path="/payment/failed" element={<PaymentFailed />} />
                     <Route path="/bonus" element={<ProtectedRoute><Bonus /></ProtectedRoute>} />
                     <Route path="/ref" element={<ProtectedRoute><Referral /></ProtectedRoute>} />
                   </Routes>
