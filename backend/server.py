@@ -162,9 +162,41 @@ async def update_bank(game: str, status: str, amount: float, user: dict):
     else:
         await db.settings.update_one({"id": "main"}, {"$inc": {f"{game}_bank": amount * 0.75}})
 
+# Cashback level system based on total deposits
+# Level 1: 0-4999₽ = 5%
+# Level 2: 5000-19999₽ = 10%
+# Level 3: 20000-49999₽ = 15%
+# Level 4: 50000-99999₽ = 20%
+# Level 5: 100000-199999₽ = 25%
+# Level 6: 200000₽+ = 30%
+CASHBACK_LEVELS = [
+    {"min_deposit": 0, "percent": 5, "name": "Бронза"},
+    {"min_deposit": 5000, "percent": 10, "name": "Серебро"},
+    {"min_deposit": 20000, "percent": 15, "name": "Золото"},
+    {"min_deposit": 50000, "percent": 20, "name": "Платина"},
+    {"min_deposit": 100000, "percent": 25, "name": "Бриллиант"},
+    {"min_deposit": 200000, "percent": 30, "name": "Легенда"},
+]
+
+def get_cashback_level(total_deposited: float):
+    """Get cashback level based on total deposits"""
+    level = CASHBACK_LEVELS[0]
+    for l in CASHBACK_LEVELS:
+        if total_deposited >= l["min_deposit"]:
+            level = l
+    return level
+
 async def calculate_raceback(user_id: str, bet: float):
-    settings = await get_settings()
-    percent = settings.get("raceback_percent", 10) / 100
+    """Calculate raceback based on user's cashback level"""
+    user = await db.users.find_one({"id": user_id}, {"_id": 0})
+    if not user:
+        return
+    
+    # Get user's total deposits and cashback level
+    total_deposited = user.get("total_deposited", 0)
+    level = get_cashback_level(total_deposited)
+    percent = level["percent"] / 100
+    
     raceback_amount = round_money(bet * percent)
     await db.users.update_one({"id": user_id}, {"$inc": {"raceback": raceback_amount}})
 
