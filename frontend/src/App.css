@@ -2912,10 +2912,32 @@ main {
   margin-top: 16px;
 }
 
+.ref-stat.highlight {
+  border-color: var(--accent-yellow);
+  background: linear-gradient(135deg, rgba(250, 204, 21, 0.1), transparent);
+}
+
 @media (max-width: 768px) {
   .ref-stats-preview {
     grid-template-columns: 1fr;
     gap: 10px;
+  }
+  
+  .ref-stats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  
+  .levels-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .ref-level-card {
+    padding: 20px;
+  }
+  
+  .level-percent {
+    font-size: 2.5rem;
   }
 }
 
