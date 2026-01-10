@@ -2383,6 +2383,215 @@ main {
   }
 }
 
+/* Daily Tasks Section */
+.daily-tasks-section {
+  background: var(--bg-card);
+  border-radius: 20px;
+  padding: 30px;
+  border: 1px solid var(--border-color);
+}
+
+.tasks-header {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.tasks-header h3 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 1.4rem;
+  margin-bottom: 10px;
+  color: var(--accent-green);
+}
+
+.tasks-header p {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+
+.tasks-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.task-card {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 20px;
+  background: var(--bg-secondary);
+  border-radius: 15px;
+  border: 2px solid var(--border-color);
+  transition: all 0.3s;
+}
+
+.task-card.completed {
+  border-color: var(--accent-green);
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), transparent);
+}
+
+.task-card.claimed {
+  opacity: 0.7;
+  border-color: var(--text-secondary);
+}
+
+.task-icon {
+  width: 55px;
+  height: 55px;
+  border-radius: 12px;
+  background: var(--bg-card);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+
+.task-card.completed .task-icon {
+  background: linear-gradient(135deg, var(--accent-green), var(--accent-green-dark));
+  color: white;
+}
+
+.task-info {
+  flex: 1;
+}
+
+.task-info h4 {
+  margin-bottom: 5px;
+  font-size: 1rem;
+}
+
+.task-info p {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  margin-bottom: 10px;
+}
+
+.task-progress {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.progress-bar {
+  flex: 1;
+  height: 8px;
+  background: var(--bg-card);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent-green), var(--accent-green-dark));
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+
+.progress-text {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  min-width: 50px;
+}
+
+.task-reward {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  min-width: 100px;
+}
+
+.reward-amount {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--accent-yellow);
+}
+
+.claim-task-btn {
+  background: linear-gradient(135deg, var(--accent-green), var(--accent-green-dark));
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.9rem;
+}
+
+.claim-task-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(34, 197, 94, 0.4);
+}
+
+.claim-task-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.task-claimed {
+  color: var(--accent-green);
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.task-pending {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.no-tasks {
+  text-align: center;
+  padding: 40px;
+  color: var(--text-secondary);
+}
+
+/* Mobile responsive for tasks */
+@media (max-width: 768px) {
+  .task-card {
+    flex-direction: column;
+    text-align: center;
+    padding: 20px 15px;
+  }
+  
+  .task-info {
+    width: 100%;
+  }
+  
+  .task-progress {
+    justify-content: center;
+  }
+  
+  .progress-bar {
+    max-width: 200px;
+  }
+  
+  .task-reward {
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-between;
+    padding-top: 15px;
+    border-top: 1px solid var(--border-color);
+    margin-top: 10px;
+  }
+}
+
 /* Referral Page */
 .ref-page h2 {
   display: flex;
