@@ -1250,6 +1250,176 @@ async def claim_achievement(achievement_id: str, user: dict = Depends(get_curren
         "balance": user_data["balance"]
     }
 
+# ================== DAILY TASKS ==================
+
+DAILY_TASKS = {
+    "play_3_games": {
+        "name": "Активный игрок",
+        "desc": "Сыграйте 3 игры сегодня",
+        "reward": 15,
+        "icon": "fa-gamepad",
+        "target": 3,
+        "type": "games_played"
+    },
+    "win_any_game": {
+        "name": "Победитель",
+        "desc": "Выиграйте хотя бы 1 игру",
+        "reward": 10,
+        "icon": "fa-trophy",
+        "target": 1,
+        "type": "games_won"
+    },
+    "bet_100": {
+        "name": "Ставочник",
+        "desc": "Сделайте ставки на сумму 100₽",
+        "reward": 20,
+        "icon": "fa-coins",
+        "target": 100,
+        "type": "total_bet"
+    },
+    "play_2_different": {
+        "name": "Разнообразие",
+        "desc": "Сыграйте в 2 разные игры",
+        "reward": 15,
+        "icon": "fa-dice",
+        "target": 2,
+        "type": "different_games"
+    },
+    "win_50": {
+        "name": "Профит",
+        "desc": "Выиграйте 50₽ за день",
+        "reward": 25,
+        "icon": "fa-money-bill-wave",
+        "target": 50,
+        "type": "total_win"
+    }
+}
+
+async def get_daily_task_progress(user_id: str):
+    """Get user's progress on daily tasks"""
+    today = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
+    today_str = today.isoformat()
+    
+    # Get all games played today from all game collections
+    game_collections = ["mines_games", "dice_games", "bubbles_games", "wheel_games", "crash_games", "x100_games"]
+    
+    games_played = 0
+    games_won = 0
+    total_bet = 0
+    total_win = 0
+    games_set = set()
+    
+    for collection_name in game_collections:
+        collection = db[collection_name]
+        games = await collection.find({
+            "user_id": user_id,
+            "created_at": {"$gte": today_str}
+        }).to_list(1000)
+        
+        game_type = collection_name.replace("_games", "")
+        
+        for game in games:
+            games_played += 1
+            total_bet += game.get("bet", 0)
+            games_set.add(game_type)
+            
+            if game.get("status") == "win":
+                games_won += 1
+                total_win += game.get("win", 0)
+    
+    return {
+        "games_played": games_played,
+        "games_won": games_won,
+        "total_bet": total_bet,
+        "total_win": total_win,
+        "different_games": len(games_set)
+    }
+
+@api_router.get("/tasks/daily")
+async def get_daily_tasks(user: dict = Depends(get_current_user)):
+    """Get daily tasks and their progress"""
+    if user.get("is_demo"):
+        return {
+            "success": True,
+            "is_demo": True,
+            "tasks": [],
+            "message": "Задания недоступны в демо-режиме"
+        }
+    
+    # Get today's claimed tasks
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    claimed_today = user.get("daily_tasks_claimed", {}).get(today, [])
+    
+    # Get progress
+    progress = await get_daily_task_progress(user["id"])
+    
+    tasks_list = []
+    for task_id, task_data in DAILY_TASKS.items():
+        task_type = task_data["type"]
+        current = progress.get(task_type, 0)
+        target = task_data["target"]
+        completed = current >= target
+        claimed = task_id in claimed_today
+        
+        tasks_list.append({
+            "id": task_id,
+            "name": task_data["name"],
+            "desc": task_data["desc"],
+            "reward": task_data["reward"],
+            "icon": task_data["icon"],
+            "current": min(current, target),
+            "target": target,
+            "completed": completed,
+            "claimed": claimed
+        })
+    
+    return {"success": True, "tasks": tasks_list}
+
+@api_router.post("/tasks/daily/{task_id}/claim")
+async def claim_daily_task(task_id: str, user: dict = Depends(get_current_user)):
+    """Claim daily task reward"""
+    if user.get("is_demo"):
+        raise HTTPException(status_code=403, detail="Задания недоступны в демо-режиме")
+    
+    if task_id not in DAILY_TASKS:
+        raise HTTPException(status_code=404, detail="Задание не найдено")
+    
+    # Get today's claimed tasks
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    claimed_today = user.get("daily_tasks_claimed", {}).get(today, [])
+    
+    if task_id in claimed_today:
+        raise HTTPException(status_code=400, detail="Награда уже получена сегодня")
+    
+    # Check if task is completed
+    progress = await get_daily_task_progress(user["id"])
+    task_data = DAILY_TASKS[task_id]
+    current = progress.get(task_data["type"], 0)
+    
+    if current < task_data["target"]:
+        raise HTTPException(status_code=400, detail=f"Задание не выполнено: {current}/{task_data['target']}")
+    
+    reward = task_data["reward"]
+    
+    # Update user - add reward and mark task as claimed
+    await db.users.update_one(
+        {"id": user["id"]},
+        {
+            "$inc": {"balance": reward},
+            "$set": {f"daily_tasks_claimed.{today}": claimed_today + [task_id]}
+        }
+    )
+    
+    user_data = await db.users.find_one({"id": user["id"]}, {"_id": 0})
+    
+    return {
+        "success": True,
+        "task": task_data["name"],
+        "reward": reward,
+        "balance": user_data["balance"],
+        "message": f"Получено {reward}₽ за задание «{task_data['name']}»"
+    }
+
 # ================== PAYMENTS ==================
 
 @api_router.post("/payment/create")
