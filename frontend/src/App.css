@@ -772,14 +772,19 @@ main {
   font-size: 0.9rem;
 }
 
+.history-row-top,
+.history-row-bottom {
+  display: none;
+}
+
+.history-user-desktop {
+  color: var(--text-secondary);
+}
+
 .history-game {
   display: flex;
   align-items: center;
   gap: 8px;
-  color: var(--text-secondary);
-}
-
-.history-user {
   color: var(--text-secondary);
 }
 
@@ -817,37 +822,40 @@ main {
   }
   
   .history-item {
-    grid-template-columns: 1fr;
-    gap: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
     padding: 14px;
-    position: relative;
   }
   
-  .history-game {
-    font-size: 0.85rem;
+  .history-row-top,
+  .history-row-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
   }
   
-  .history-user {
+  .history-user-desktop {
     display: none;
   }
   
-  .history-bet {
-    position: absolute;
-    top: 14px;
-    right: 14px;
+  .history-game {
     font-size: 0.9rem;
+  }
+  
+  .history-bet {
+    font-size: 1rem;
     color: var(--text-primary);
   }
   
   .history-coeff {
-    font-size: 0.85rem;
+    font-size: 0.9rem;
   }
   
   .history-result {
-    position: absolute;
-    bottom: 14px;
-    right: 14px;
-    font-size: 0.95rem;
+    font-size: 1rem;
+    text-align: right;
   }
 }
 
@@ -860,14 +868,19 @@ main {
   .history-item {
     padding: 12px;
     border-radius: 10px;
+    gap: 8px;
   }
   
-  .history-bet {
+  .history-game {
     font-size: 0.85rem;
   }
   
+  .history-bet {
+    font-size: 0.95rem;
+  }
+  
   .history-result {
-    font-size: 0.9rem;
+    font-size: 0.95rem;
   }
 }
 
