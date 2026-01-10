@@ -277,10 +277,15 @@ class EasyMoneyAPITester:
         self.test_online_count()
         self.test_demo_registration()
         self.test_get_user_info()
+        
+        # MAIN TEST: Daily Bonus System (as requested)
+        self.test_daily_bonus_system()
+        
+        # Additional game tests
         self.test_mines_game()
         self.test_dice_game()
         
-        # Additional tests
+        # Admin and other tests
         self.test_admin_login()
         self.test_additional_endpoints()
         
