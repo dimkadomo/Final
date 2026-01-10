@@ -139,10 +139,6 @@ const Header = () => {
                 <i className="fa-solid fa-bolt"></i>
                 <span>X100</span>
               </Link>
-              <Link to="/keno" className="menu-item" data-testid="menu-keno">
-                <i className="fa-solid fa-table-cells"></i>
-                <span>Keno</span>
-              </Link>
             </div>
             
             <div className="menu-section">
