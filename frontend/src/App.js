@@ -1569,6 +1569,108 @@ const Bonus = () => {
         </div>
       )}
 
+      {activeTab === 'cashback' && (
+        <div className="cashback-section" data-testid="cashback-section">
+          {/* Current Level Card */}
+          <div className="cashback-level-card">
+            <div className="cashback-badge">
+              <span className="cashback-icon">
+                {cashbackData.level?.percent === 5 && '🥉'}
+                {cashbackData.level?.percent === 10 && '🥈'}
+                {cashbackData.level?.percent === 15 && '🥇'}
+                {cashbackData.level?.percent === 20 && '💎'}
+                {cashbackData.level?.percent === 25 && '💠'}
+                {cashbackData.level?.percent === 30 && '👑'}
+              </span>
+              <span className="cashback-level-name">{cashbackData.level?.name || 'Бронза'}</span>
+            </div>
+            <div className="cashback-percent">{cashbackData.level?.percent || 5}%</div>
+            <p className="cashback-desc">кешбэк от проигранных ставок</p>
+            
+            <div className="cashback-deposited">
+              <span>Всего депозитов:</span>
+              <strong>{(cashbackData.total_deposited || 0).toLocaleString('ru-RU')} ₽</strong>
+            </div>
+            
+            {cashbackData.next_level && (
+              <div className="cashback-progress">
+                <div className="progress-info">
+                  <span>До уровня "{cashbackData.next_level.name}"</span>
+                  <span>{(cashbackData.total_deposited || 0).toLocaleString('ru-RU')} / {cashbackData.next_level.min_deposit.toLocaleString('ru-RU')} ₽</span>
+                </div>
+                <div className="progress-bar">
+                  <div 
+                    className="progress-fill" 
+                    style={{ 
+                      width: `${Math.min(100, ((cashbackData.total_deposited || 0) / cashbackData.next_level.min_deposit) * 100)}%` 
+                    }}
+                  ></div>
+                </div>
+              </div>
+            )}
+            
+            {!cashbackData.next_level && cashbackData.total_deposited >= 200000 && (
+              <div className="max-cashback-badge">
+                <i className="fa-solid fa-crown"></i> Максимальный уровень!
+              </div>
+            )}
+          </div>
+
+          {/* Available Cashback */}
+          <div className="cashback-available-card">
+            <h3><i className="fa-solid fa-wallet"></i> Доступный кешбэк</h3>
+            <div className="cashback-amount">{cashbackData.raceback?.toFixed(2) || '0.00'} ₽</div>
+            <button 
+              className="claim-cashback-btn" 
+              onClick={claimRaceback} 
+              disabled={loading || cashbackData.raceback < 1 || user?.balance > 0 || isDemo}
+            >
+              {isDemo ? 'Недоступно в демо' : user?.balance > 0 ? 'Доступно при 0₽ балансе' : 
+               loading ? <i className="fa-solid fa-spinner fa-spin"></i> : 'Забрать кешбэк'}
+            </button>
+            <p className="cashback-note">Кешбэк можно забрать только при нулевом балансе</p>
+          </div>
+
+          {/* Levels Overview */}
+          <div className="cashback-levels-overview">
+            <h3>Уровни кешбэка</h3>
+            <p className="levels-desc">Чем больше депозитов - тем выше процент кешбэка!</p>
+            <div className="cashback-levels-grid">
+              {(cashbackData.levels?.length > 0 ? cashbackData.levels : [
+                {min_deposit: 0, percent: 5, name: "Бронза"},
+                {min_deposit: 5000, percent: 10, name: "Серебро"},
+                {min_deposit: 20000, percent: 15, name: "Золото"},
+                {min_deposit: 50000, percent: 20, name: "Платина"},
+                {min_deposit: 100000, percent: 25, name: "Бриллиант"},
+                {min_deposit: 200000, percent: 30, name: "Легенда"}
+              ]).map((level, i) => (
+                <div 
+                  key={i} 
+                  className={`cashback-level-item ${cashbackData.level?.percent === level.percent ? 'active' : ''} ${(cashbackData.total_deposited || 0) >= level.min_deposit && cashbackData.level?.percent !== level.percent ? 'completed' : ''}`}
+                >
+                  <div className="level-emoji">
+                    {level.percent === 5 && '🥉'}
+                    {level.percent === 10 && '🥈'}
+                    {level.percent === 15 && '🥇'}
+                    {level.percent === 20 && '💎'}
+                    {level.percent === 25 && '💠'}
+                    {level.percent === 30 && '👑'}
+                  </div>
+                  <div className="level-name">{level.name}</div>
+                  <div className="level-percent-value">{level.percent}%</div>
+                  <div className="level-requirement">
+                    {level.min_deposit === 0 ? 'Старт' : `${(level.min_deposit / 1000).toFixed(0)}K₽+`}
+                  </div>
+                  {cashbackData.level?.percent === level.percent && (
+                    <i className="fa-solid fa-check-circle level-active-check"></i>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
       {activeTab === 'tasks' && (
         <div className="daily-tasks-section" data-testid="daily-tasks-section">
           <div className="tasks-header">
